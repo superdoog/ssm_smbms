@@ -27,4 +27,18 @@
     <context:component-scan base-package="com.lv.controller" />
 
 
+    <!--拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- /** 表示所有的url，包括子url路径 -->
+            <mvc:mapping path="/**" />
+            <!-- 除了以下的不拦截  -->
+            <mvc:exclude-mapping path="/login.html" />
+            <mvc:exclude-mapping path="/user/dologin.html" />
+            <mvc:exclude-mapping path="/statics/**" />
+            <bean class="com.lv.utils.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
 </beans>
