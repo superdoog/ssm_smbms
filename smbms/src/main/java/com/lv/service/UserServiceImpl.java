@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -39,5 +41,31 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return flag;
+    }
+
+    //查询用户数量
+    @Override
+    public int getUserCount(String username, int userRole) {
+        int count = 0;
+        try {
+            count = userMapper.getUserCount(username,userRole);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    //通过条件查询用户列表
+    @Override
+    public List<User> getUserList(String username, int userRole, int currentPage, int pageSize) {
+        List<User> userList = null;
+        //换算索引
+        int currentPageNo = (currentPage-1)*pageSize;
+        try {
+            userList = userMapper.getUserList(username, userRole, currentPageNo, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userList;
     }
 }
