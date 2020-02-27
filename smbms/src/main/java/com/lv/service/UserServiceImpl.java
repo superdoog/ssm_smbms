@@ -68,4 +68,16 @@ public class UserServiceImpl implements UserService {
         }
         return userList;
     }
+
+    //通过userCode查询用户
+    @Override
+    public User getUserByUserCode(String userCode) {
+        User user = null;
+        try {
+            user = userMapper.getUserByUserCode(userCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 }

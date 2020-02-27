@@ -18,5 +18,8 @@ public interface UserService {
     //通过条件查询用户列表
     public List<User> getUserList(String username, int userRole, int currentPageNo, int pageSize);
 
+    //通过userCode查询用户
+    public User getUserByUserCode(String userCode);
+
 
 }

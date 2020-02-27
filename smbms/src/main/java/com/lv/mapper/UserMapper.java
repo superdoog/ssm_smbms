@@ -17,7 +17,8 @@ public interface UserMapper {
     //修改用户密码
     boolean updatePwd(@Param("id") int id, @Param("userPassword") String userPassword) throws Exception;
 
-    //通过Id查询用户
+    //通过userCode查询用户
+    public User getUserByUserCode(@Param("userCode") String userCode) throws Exception;
 
     //查询用户数量
     public int getUserCount(@Param("username") String username, @Param("userRole") int userRole) throws Exception;

@@ -65,6 +65,10 @@
         </trim>
     </select>
 
+    <!--通过userCode查询用户-->
+    <select id="getUserByUserCode" resultType="com.lv.pojo.User">
+        select * from smbms.smbms_user where userCode=#{userCode}
+    </select>
 
 
 </mapper>

@@ -167,4 +167,27 @@ public class UserController {
         return "jsp/userlist";
     }
 
+    //跳转用户增加页面
+    @RequestMapping("/useradd.html")
+    public String userAdd(){
+        return "jsp/useradd";
+    }
+    //验证用户是否存在
+    @ResponseBody
+    @RequestMapping("/ucexist.html")
+    public String userCodeExist(@RequestParam("userCode") String userCode){
+        User user = userService.getUserByUserCode(userCode);
+        Map<String, String> resultMap = new HashMap<>();
+        if (user!=null){ //userCode不存在
+            resultMap.put("userCode","exist");
+        }
+        return JSONArray.toJSONString(resultMap);
+    }
+    //获取角色列表
+    @ResponseBody
+    @RequestMapping(value = "/getrolelist.html")
+    public String getRoleList(){
+        List<Role> roleList = roleService.getRoleList();
+        return JSONArray.toJSONString(roleList);
+    }
 }
