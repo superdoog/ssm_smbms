@@ -49,5 +49,29 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
+<!--    &lt;!&ndash; json乱码配置 &ndash;&gt;-->
+<!--    <mvc:annotation-driven>-->
+<!--        <mvc:message-converters>-->
+<!--            &lt;!&ndash; 配置消息转换器用于解决json格式乱码问题 &ndash;&gt;-->
+<!--            <bean class="org.springframework.http.converter.StringHttpMessageConverter">-->
+<!--                <property name="supportedMediaTypes">-->
+<!--                    <list>-->
+<!--                        <value>application/json;charset=UTF-8</value>-->
+<!--                    </list>-->
+<!--                </property>-->
+<!--            </bean>-->
+<!--        </mvc:message-converters>-->
+<!--    </mvc:annotation-driven>-->
+
+<!--    &lt;!&ndash;文件上传配置&ndash;&gt;-->
+<!--    <bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--        &lt;!&ndash; 请求的编码格式，必须和jSP的pageEncoding属性一致，以便正确读取表单的内容，默认为ISO-8859-1 &ndash;&gt;-->
+<!--        <property name="defaultEncoding" value="utf-8"/>-->
+<!--        &lt;!&ndash; 上传文件大小上限，单位为字节（10485760=10M） &ndash;&gt;-->
+<!--        <property name="maxUploadSize" value="10485760"/>-->
+<!--        <property name="maxInMemorySize" value="40960"/>-->
+<!--    </bean>-->
+
+
 
 </beans>

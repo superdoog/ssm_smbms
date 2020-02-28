@@ -8,7 +8,7 @@
             <span>用户管理页面 >> 用户添加页面</span>
         </div>
         <div class="providerAdd">
-            <form id="userForm" name="userForm" enctype="multipart/form-data"  method="post" action="${pageC                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ontext.request.contextPath }/user/addUser.html">
+            <form id="userForm" name="userForm" enctype="multipart/form-data"  method="post" action="${pageContext.request.contextPath }/user/addUser.html">
 				<input type="hidden" name="method" value="add">
                 <!--div的class 为error是验证错误，ok是验证成功-->
                 <div>

@@ -8,6 +8,7 @@ import com.lv.service.UserServiceImpl;
 import com.lv.utils.Constants;
 import com.lv.utils.PageSupport;
 import com.mysql.cj.util.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
+    private Logger logger = Logger.getLogger(UserController.class);
 
     @Autowired
     @Qualifier("userServiceImpl")
@@ -134,10 +138,10 @@ public class UserController {
         pageSupport.setTotalCount(totalCount);
         int totalPageCount = pageSupport.getTotalPageCount();
 
-        if (queryUserName == null){
-            queryUserName="";
+        if (queryUserName == null) {
+            queryUserName = "";
         }
-        if (strQueryUserRole!=null && !strQueryUserRole.equals("")){
+        if (strQueryUserRole != null && !strQueryUserRole.equals("")) {
             queryUserRole = Integer.parseInt(strQueryUserRole);
         }
         if (pageIndex != null) {
@@ -169,25 +173,152 @@ public class UserController {
 
     //跳转用户增加页面
     @RequestMapping("/useradd.html")
-    public String userAdd(){
+    public String userAdd() {
         return "jsp/useradd";
     }
+
     //验证用户是否存在
     @ResponseBody
     @RequestMapping("/ucexist.html")
-    public String userCodeExist(@RequestParam("userCode") String userCode){
+    public String userCodeExist(@RequestParam("userCode") String userCode) {
         User user = userService.getUserByUserCode(userCode);
         Map<String, String> resultMap = new HashMap<>();
-        if (user!=null){ //userCode不存在
-            resultMap.put("userCode","exist");
+        if (user != null) { //userCode不存在
+            resultMap.put("userCode", "exist");
         }
         return JSONArray.toJSONString(resultMap);
     }
+
     //获取角色列表
     @ResponseBody
     @RequestMapping(value = "/getrolelist.html")
-    public String getRoleList(){
+    public String getRoleList() {
         List<Role> roleList = roleService.getRoleList();
         return JSONArray.toJSONString(roleList);
     }
+
+    //展示用户信息
+    @RequestMapping("/view")
+    public String viewUser(@RequestParam("uid") String uid, Model model) {
+        User user = null;
+        user = userService.getUserById(Integer.parseInt(uid));
+        model.addAttribute("user", user);
+        return "jsp/userview";
+    }
+
+    //删除用户
+    @ResponseBody
+    @RequestMapping("/deluser")
+    public String deleteUser(@RequestParam("uid") String uid) {
+        boolean flag = false;
+        Map<String, String> resultMap = new HashMap<>();
+        flag = userService.deleteUserById(Integer.parseInt(uid));
+        if (StringUtils.isNullOrEmpty(uid)) {
+            //不存在
+            resultMap.put("delResult", "notexist");
+        } else {
+            if (flag) {
+                //删除成功
+                resultMap.put("delResult", "true");
+            } else {
+                //删除失败
+                resultMap.put("delResult", "false");
+            }
+        }
+        return JSONArray.toJSONString(resultMap);
+    }
+
+    //跳转修改用户页面
+    @RequestMapping("/usermodify")
+    public String userModifyPage(@RequestParam("uid") String uid,Model model){
+        User user = null;
+        user = userService.getUserById(Integer.parseInt(uid));
+        model.addAttribute("user",user);
+        return "jsp/usermodify";
+    }
+    //修改用户
+    @RequestMapping("/usermodifysave.html")
+    public String userModifySave(User user, HttpSession session){
+        user.setModifyBy(((User)session.getAttribute(Constants.USER_SESSION)).getId());
+        user.setModifyDate(new Date());
+        boolean flag = false;
+        flag = userService.updateUser(user);
+
+        if (flag) {
+            return "redirect:/user/userlist.html";
+        }
+
+        return "jsp/usermodify";
+    }
+
+
+//    // 添加用户操作
+//    @RequestMapping(value="/addUser.html",method= RequestMethod.POST)
+//    public String addUser(User user, HttpSession session, HttpServletRequest request,
+//                          @RequestParam(value = "attachs", required = false) MultipartFile[] attachs) {
+//        String idPicPath = null;
+//        String workPicPath = null;
+//        String errorInfo = null;
+//        boolean flag = true;
+//        String path = "F:/Work/SSM/SSM-MySmbms/WebContent/statics/images/";
+//        //String path = request.getSession().getServletContext().getRealPath("statics" + File.separator + "uploadfiles");
+//        logger.info("uploadFile path ============== > " + path);
+//        for (int i = 0; i < attachs.length; i++) {
+//            MultipartFile attach = attachs[i];
+//            if (!attach.isEmpty()) {
+//                if (i == 0) {
+//                    errorInfo = "uploadFileError";
+//                } else if (i == 1) {
+//                    errorInfo = "uploadWpError";
+//                }
+//                String oldFileName = attach.getOriginalFilename();// 原文件名
+//                logger.info("uploadFile oldFileName ============== > " + oldFileName);
+//                String prefix = FilenameUtils.getExtension(oldFileName);// 原文件后缀
+//                logger.debug("uploadFile prefix============> " + prefix);
+//                int filesize = 500000;
+//                logger.debug("uploadFile size============> " + attach.getSize());
+//                if (attach.getSize() > filesize) {// 上传大小不得超过 500k
+//                    request.setAttribute(errorInfo, " * 上传大小不得超过 500k");
+//                    flag = false;
+//                } else if (prefix.equalsIgnoreCase("jpg") || prefix.equalsIgnoreCase("png")
+//                        || prefix.equalsIgnoreCase("jpeg") || prefix.equalsIgnoreCase("pneg")) {// 上传图片格式不正确
+//                    String fileName = System.currentTimeMillis() + RandomUtils.nextInt(1000000) + "_Personal.jpg";
+//                    logger.debug("new fileName======== " + attach.getName());
+//                    File targetFile = new File(path, fileName);
+//                    if (!targetFile.exists()) {
+//                        targetFile.mkdirs();
+//                    }
+//                    // 保存
+//                    try {
+//                        attach.transferTo(targetFile);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        request.setAttribute(errorInfo, " * 上传失败！");
+//                        flag = false;
+//                    }
+//                    if (i == 0) {
+//                        idPicPath =  fileName;
+//                    } else if (i == 1) {
+//                        workPicPath =  fileName;
+//                    }
+//                    logger.debug("idPicPath: " + idPicPath);
+//                    logger.debug("workPicPath: " + workPicPath);
+//
+//                } else {
+//                    request.setAttribute(errorInfo, " * 上传图片格式不正确");
+//                    flag = false;
+//                }
+//            }
+//        }
+//        if (flag) {
+//            user.setCreatedBy(((User) session.getAttribute(Constants.USER_SESSION)).getId());
+//            user.setCreationDate(new Date());
+//            user.setIdPicPath(idPicPath);
+//            user.setWorkPicPath(workPicPath);
+//            if (userService.insert(user) == 1) {
+//                return "redirect:/user/userlist.html";
+//            }
+//        }
+//        return "jsp/useradd";
+//    }
 }

@@ -6,23 +6,31 @@
 
     <!-- User表 resultMap -->
     <resultMap id="BaseResultMap" type="User">
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="userCode" property="userCode" jdbcType="VARCHAR" />
-        <result column="userName" property="userName" jdbcType="VARCHAR" />
-        <result column="userPassword" property="userPassword" jdbcType="VARCHAR" />
-        <result column="gender" property="gender" jdbcType="INTEGER" />
-        <result column="birthday" property="birthday" jdbcType="DATE" />
-        <result column="phone" property="phone" jdbcType="VARCHAR" />
-        <result column="address" property="address" jdbcType="VARCHAR" />
-        <result column="userRole" property="userRole" jdbcType="INTEGER" />
-        <result column="createdBy" property="createdBy" jdbcType="BIGINT" />
-        <result column="creationDate" property="creationDate" jdbcType="TIMESTAMP" />
-        <result column="modifyBy" property="modifyBy" jdbcType="BIGINT" />
-        <result column="modifyDate" property="modifyDate" jdbcType="TIMESTAMP" />
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="userCode" property="userCode" jdbcType="VARCHAR"/>
+        <result column="userName" property="userName" jdbcType="VARCHAR"/>
+        <result column="userPassword" property="userPassword" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="INTEGER"/>
+        <result column="birthday" property="birthday" jdbcType="DATE"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="userRole" property="userRole" jdbcType="INTEGER"/>
+        <result column="createdBy" property="createdBy" jdbcType="BIGINT"/>
+        <result column="creationDate" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="modifyBy" property="modifyBy" jdbcType="BIGINT"/>
+        <result column="modifyDate" property="modifyDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 当数据库中的字段信息与对象的属性不一致时需要通过resultMap来映射 -->
+    <resultMap id="userList" type="User">
+        <id property="id" column="id"/>
+        <id property="workPicPath" column="workPicPath"/>
+        <id property="workPicPath" column="workPicPath"/>
+        <result property="userRoleName" column="roleName"/>
     </resultMap>
 
     <!--登录-->
-    <select id="getLoginUser" resultType="com.lv.pojo.User" parameterType="string">
+    <select id="getLoginUser" resultType="User" parameterType="string">
         select *
         from smbms.smbms_user
         where userCode = #{userCode}
@@ -50,8 +58,8 @@
     </select>
 
     <!--通过条件查询用户列表-->
-    <select id="getUserList" resultType="com.lv.pojo.User">
-        select *
+    <select id="getUserList" resultMap="userList">
+        select u.*, r.roleName
         from smbms.smbms_user u,
         smbms.smbms_role r
         <trim prefix=" where u.userRole = r.id">
@@ -66,9 +74,70 @@
     </select>
 
     <!--通过userCode查询用户-->
-    <select id="getUserByUserCode" resultType="com.lv.pojo.User">
-        select * from smbms.smbms_user where userCode=#{userCode}
+    <select id="getUserByUserCode" resultMap="userList">
+        select *
+        from smbms.smbms_user
+        where userCode = #{userCode}
     </select>
+    <!--通过id查询用户-->
+    <select id="getUserById" resultMap="userList">
+        select u.*, r.roleName
+        from smbms.smbms_user u,
+             smbms.smbms_role r
+        where u.id = #{uid}
+          and u.userRole = r.id
+    </select>
+
+    <!--通过id删除用户-->
+    <delete id="deleteUserById" parameterType="int">
+        delete
+        from smbms.smbms_user
+        where id = #{uid}
+    </delete>
+
+    <!--修改用户-->
+    <delete id="updateUser" parameterType="User">
+        update smbms.smbms_user
+        <set>
+            <if test="userCode != null">
+                userCode = #{userCode},
+            </if>
+            <if test="userName != null">
+                userName = #{userName},
+            </if>
+            <if test="userPassword != null">
+                userPassword = #{userPassword},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="userRole != null">
+                userRole = #{userRole},
+            </if>
+            <if test="createdBy != null">
+                createdBy = #{createdBy},
+            </if>
+            <if test="creationDate != null">
+                creationDate = #{creationDate},
+            </if>
+            <if test="modifyBy != null">
+                modifyBy = #{modifyBy},
+            </if>
+            <if test="modifyDate != null">
+                modifyDate = #{modifyDate}
+            </if>
+        </set>
+        where id = #{id}
+    </delete>
 
 
 </mapper>

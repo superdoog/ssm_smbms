@@ -21,5 +21,14 @@ public interface UserService {
     //通过userCode查询用户
     public User getUserByUserCode(String userCode);
 
+    //通过id查询用户
+    public User getUserById(int uid);
+
+    //通过id删除用户
+    public boolean deleteUserById(int uid);
+
+    //修改用户
+    public boolean updateUser(User user);
+
 
 }

@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     public int getUserCount(String username, int userRole) {
         int count = 0;
         try {
-            count = userMapper.getUserCount(username,userRole);
+            count = userMapper.getUserCount(username, userRole);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     public List<User> getUserList(String username, int userRole, int currentPage, int pageSize) {
         List<User> userList = null;
         //换算索引
-        int currentPageNo = (currentPage-1)*pageSize;
+        int currentPageNo = (currentPage - 1) * pageSize;
         try {
             userList = userMapper.getUserList(username, userRole, currentPageNo, pageSize);
         } catch (Exception e) {
@@ -80,4 +80,40 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public User getUserById(int uid) {
+        User user = null;
+        try {
+            user = userMapper.getUserById(uid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @Override
+    public boolean deleteUserById(int uid) {
+        boolean flag = false;
+
+        try {
+            flag = userMapper.deleteUserById(uid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
+    @Override
+    public boolean updateUser(User user) {
+        boolean flag = false;
+        try {
+            flag = userMapper.updateUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
+
 }
